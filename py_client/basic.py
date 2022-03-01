@@ -3,7 +3,7 @@ import requests
 # endpoint="https://httpbin.org/status/200/"
 # endpoint2="https://httpbin.org/anything"
 
-my_endpoint="http://localhost:8000/api"
+my_endpoint="http://localhost:8000/api/" #the last / is important in the URL, otherwise the query does not get passed by the client to the django view
 
 #data is sent as form data, the json data is json data
 # get_response=requests.get(endpoint2, data={"hey":"naaa"},json={"pratyush":"hello world to me"})
