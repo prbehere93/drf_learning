@@ -10,5 +10,6 @@ my_endpoint="http://localhost:8000/api/" #the last / is important in the URL, ot
 # print(get_response.json())
 
 get_response=requests.get(my_endpoint, params={"abc":123}, json={"query":"some wierd text data"})
+# get_response=requests.post(my_endpoint, params={"abc":123}, json={"query":"some wierd text data"})
 print(get_response.json())
 print(get_response.status_code)
