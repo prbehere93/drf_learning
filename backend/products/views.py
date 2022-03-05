@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from cgitb import lookup
+from rest_framework import generics
+from .models import Products
+from .serializers import ProductSerializer
+from . import serializers
 
-# Create your views here.
+class ProductAPIView(generics.RetrieveAPIView):
+    queryset=Products.objects.all()
+    serializer_class=ProductSerializer
+    lookup_field='pk'
