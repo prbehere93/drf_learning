@@ -25,9 +25,11 @@ from products.serializers import ProductSerializer
 
 @api_view(["GET","POST"]) #this is a part of the DRF (it accepts a list of the allowed methods)
 def api_home(request):
-    instance=Products.objects.all().order_by("?").first()
-    # data={}
-    if instance:
-        # data=model_to_dict(model_data, fields=['id','title','content','price'])
-        some_data=ProductSerializer(instance).data   
-    return Response(some_data)
+    """
+    DRF view
+    """
+    serializer=ProductSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        # serializer.save()
+        print(serializer.data)
+    return Response(serializer.data)
