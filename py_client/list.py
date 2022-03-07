@@ -9,5 +9,5 @@ data={
     "price":88.88,
     "content":"something to create right here2"
 }
-get_response=requests.post(endpoint,json=data)
+get_response=requests.get(endpoint)
 print(get_response.json())
