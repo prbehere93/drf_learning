@@ -57,38 +57,62 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 #     queryset=Products.objects.all()
 #     serializer_class=ProductSerializer
 
-@api_view(['GET','POST'])
-def product_alt_view(request,pk=None, *args, **kwargs):
-    """
-    A function based API View which is a combination of DetailAPIView and ListCreateAPIView
-    The idea here is that it will either get the 'detail' or 'list' of the model in case of a GET request
-    Or it will 'create' a model record in case of a POST request
-    """
+# @api_view(['GET','POST'])
+# def product_alt_view(request,pk=None, *args, **kwargs):
+#     """
+#     A function based API View which is a combination of DetailAPIView and ListCreateAPIView
+#     The idea here is that it will either get the 'detail' or 'list' of the model in case of a GET request
+#     Or it will 'create' a model record in case of a POST request
+#     """
     
-    if request.method=="GET":
-        #DetailViewAPI
-        if pk is not None:
-            obj=get_object_or_404(Products, pk=pk)
-            data=ProductSerializer(obj, many=False).data
-            return Response(data)
+#     if request.method=="GET":
+#         #DetailViewAPI
+#         if pk is not None:
+#             obj=get_object_or_404(Products, pk=pk)
+#             data=ProductSerializer(obj, many=False).data
+#             return Response(data)
         
+#         else:
+#         #for the ListViewAPI
+#             queryset=Products.objects.all()
+#             data=ProductSerializer(queryset, many=True).data
+#             return Response(data)
+        
+    
+#     if request.method=="POST":
+#         serializer=ProductSerializer(data=request.data)
+        
+#         if serializer.is_valid(raise_exception=True):
+#             title=serializer.validated_data.get('title')
+#             content=serializer.validated_data.get('content') or None
+            
+#             if content is None:
+#                 content=title
+#             serializer.save(content=content)
+#             return Response(serializer.data)
+#         return Response({'invalid':'data not supplied in a proper format'}, status=400)
+            
+class ProductUpdateAPIView(generics.UpdateAPIView):
+    queryset=Products.objects.all()
+    serializer_class=ProductSerializer
+    lookup_field='pk'
+    
+    def perform_update(self,serializer):
+        """
+        This method is similar to the 'perform_create' in the CreateAPIView
+        """
+        instance=self.get_object()
+        content=serializer.validated_data.get('content')
+        if not content:
+            serializer.save(content=instance.title)
         else:
-        #for the ListViewAPI
-            queryset=Products.objects.all()
-            data=ProductSerializer(queryset, many=True).data
-            return Response(data)
-        
+            serializer.save()
+
+class ProductDeleteAPIView(generics.DestroyAPIView):
+    queryset=Products.objects.all()
+    serializer_class=ProductSerializer
+    lookup_field='pk'
     
-    if request.method=="POST":
-        serializer=ProductSerializer(data=request.data)
-        
-        if serializer.is_valid(raise_exception=True):
-            title=serializer.validated_data.get('title')
-            content=serializer.validated_data.get('content') or None
-            
-            if content is None:
-                content=title
-            serializer.save(content=content)
-            return Response(serializer.data)
-        return Response({'invalid':'data not supplied in a proper format'}, status=400)
-            
+    def perform_destroy(self,instance):
+        #do whatever you want with the instance before destroy
+        super().perform_destroy(instance)
