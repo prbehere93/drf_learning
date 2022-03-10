@@ -1,6 +1,7 @@
 from cgitb import lookup
 from urllib import response
-from rest_framework import generics, mixins
+from rest_framework import generics, mixins, authentication, permissions
+from .permissions import IsStaffEditorPermission
 from .models import Products
 from .serializers import ProductSerializer
 from . import serializers
@@ -38,6 +39,9 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     """
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
+    authentication_classes=[authentication.SessionAuthentication] #this is more useful within the django app (for a website using some kind of FrontEnd Framework)
+    # permission_classes=[permissions.IsAuthenticatedOrReadOnly] #can also Put DjangoModelPermissions
+    permission_classes=[IsStaffEditorPermission] #can also Put DjangoModelPermissions
     
     def perform_create(self,serializer):
         """
