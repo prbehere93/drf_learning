@@ -1,6 +1,6 @@
 from cgitb import lookup
 from urllib import response
-from rest_framework import generics
+from rest_framework import generics, mixins
 from .models import Products
 from .serializers import ProductSerializer
 from . import serializers
@@ -58,7 +58,7 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 #     serializer_class=ProductSerializer
 
 # @api_view(['GET','POST'])
-# def product_alt_view(request,pk=None, *args, **kwargs):
+# def product_alt_view(request, *args, **kwargs):
 #     """
 #     A function based API View which is a combination of DetailAPIView and ListCreateAPIView
 #     The idea here is that it will either get the 'detail' or 'list' of the model in case of a GET request
@@ -67,6 +67,7 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     
 #     if request.method=="GET":
 #         #DetailViewAPI
+#         pk=kwargs.get('pk')  
 #         if pk is not None:
 #             obj=get_object_or_404(Products, pk=pk)
 #             data=ProductSerializer(obj, many=False).data
@@ -116,3 +117,47 @@ class ProductDeleteAPIView(generics.DestroyAPIView):
     def perform_destroy(self,instance):
         #do whatever you want with the instance before destroy
         super().perform_destroy(instance)
+        
+class ProductMixinView(mixins.RetrieveModelMixin,
+                       mixins.ListModelMixin,
+                       mixins.CreateModelMixin,
+                       generics.GenericAPIView):
+    """
+    A relatively complicated view which basically combines the CreateAPI, RetrieveAPI, ListAPI, UpdateAPIViews
+    This is done by inheriting from different mixins (eg-ListModelMixin), this allows us to utilize a lot of prebuilt methods and utilities
+    We can also modify this APIView to Update and Delete Stuff (by overriding the PUT and DELETE methods)
+    However, it is better to keep these Views separate (not mix the logic)
+    """
+    queryset=Products.objects.all()
+    serializer_class=ProductSerializer
+    lookup_field='pk'
+    
+    def put(): #we can also deal with put requests and delete requests in this View
+        pass
+    def delete():
+        pass
+    def get(self,request,*args, **kwargs):
+        """
+        Basically this 'GET' method will retrieve a single object if it is given a valid 'kwarg' or it will return the entire list
+        """
+        pk=kwargs.get('pk') #returns None if there is no keyword called 'pk'
+        if pk:
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request,*args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+    
+    def perform_create(self,serializer):
+        """
+        You can actually modify/assign/ do other stuff in this func to make changes/add more 
+        things to the model before saving or send signals
+        """
+        title=serializer.validated_data.get('title')
+        content=serializer.validated_data.get('content') or None
+        
+        if content is None:
+            content=title
+        print(serializer)
+        serializer.save(content=content)
+        

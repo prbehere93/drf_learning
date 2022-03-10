@@ -24,3 +24,4 @@ class ProductSerializer(serializers.ModelSerializer): #very similar to how you m
             return None
         return obj.discount()
         
+    
