@@ -39,7 +39,8 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     """
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
-    authentication_classes=[authentication.SessionAuthentication] #this is more useful within the django app (for a website using some kind of FrontEnd Framework)
+    authentication_classes=[authentication.TokenAuthentication #for token based Auth
+                            ,authentication.SessionAuthentication] #this is more useful within the django app (for a website using some kind of FrontEnd Framework)
     # permission_classes=[permissions.IsAuthenticatedOrReadOnly] #can also Put DjangoModelPermissions
     permission_classes=[permissions.IsAdminUser, IsStaffEditorPermission] #the order of the permissions is very imp here
     
