@@ -1,20 +1,15 @@
-from cgitb import lookup
-from urllib import response
-from rest_framework import generics, mixins, authentication, permissions
-from .permissions import IsStaffEditorPermission
+from rest_framework import generics, mixins, permissions
+# from api.permissions import IsStaffEditorPermission
+from api.mixins import StaffEditorPermissionMixin
 from .models import Products
 from .serializers import ProductSerializer
-from . import serializers
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
 
-class ProductAPIView(generics.RetrieveAPIView):
+class ProductAPIView(StaffEditorPermissionMixin, generics.RetrieveAPIView):
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
     lookup_field='pk'
 
-class ProductCreateAPIView(generics.CreateAPIView):
+class ProductCreateAPIView(StaffEditorPermissionMixin, generics.CreateAPIView):
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
     
@@ -32,7 +27,7 @@ class ProductCreateAPIView(generics.CreateAPIView):
         serializer.save(content=content)
         #send a django signal or assign a User FK to this model using request.user
 
-class ProductListCreateAPIView(generics.ListCreateAPIView):
+class ProductListCreateAPIView(StaffEditorPermissionMixin,generics.ListCreateAPIView):
     """
     This is a mix of CreateAPIView and ListAPIView, depending on the method (GET or POST)
     this will either list all the Products or Create new ones
@@ -42,7 +37,7 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     # authentication_classes=[authentication.TokenAuthentication #for token based Auth
     #                         ,authentication.SessionAuthentication] #this is more useful within the django app (for a website using some kind of FrontEnd Framework)
     # permission_classes=[permissions.IsAuthenticatedOrReadOnly] #can also Put DjangoModelPermissions
-    permission_classes=[permissions.IsAdminUser, IsStaffEditorPermission] #the order of the permissions is very imp here
+    # permission_classes=[permissions.IsAdminUser, IsStaffEditorPermission] #the order of the permissions is very imp here
     
     def perform_create(self,serializer):
         """
@@ -98,11 +93,11 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 #             return Response(serializer.data)
 #         return Response({'invalid':'data not supplied in a proper format'}, status=400)
             
-class ProductUpdateAPIView(generics.UpdateAPIView):
+class ProductUpdateAPIView(StaffEditorPermissionMixin,generics.UpdateAPIView):
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
     lookup_field='pk'
-    permission_classes=[permissions.IsAdminUser, IsStaffEditorPermission] #the order of the permissions is very imp here
+    # permission_classes=[permissions.IsAdminUser, IsStaffEditorPermission] #the order of the permissions is very imp here
     
     def perform_update(self,serializer):
         """
@@ -115,17 +110,18 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
         else:
             serializer.save()
 
-class ProductDeleteAPIView(generics.DestroyAPIView):
+class ProductDeleteAPIView(StaffEditorPermissionMixin, generics.DestroyAPIView):
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
     lookup_field='pk'
-    permission_classes=[permissions.IsAdminUser, IsStaffEditorPermission] #the order of the permissions is very imp here
+    # permission_classes=[permissions.IsAdminUser, IsStaffEditorPermission] #the order of the permissions is very imp here
     
     def perform_destroy(self,instance):
         #do whatever you want with the instance before destroy
         super().perform_destroy(instance)
         
-class ProductMixinView(mixins.RetrieveModelMixin,
+class ProductMixinView(StaffEditorPermissionMixin,
+                       mixins.RetrieveModelMixin,
                        mixins.ListModelMixin,
                        mixins.CreateModelMixin,
                        generics.GenericAPIView):
@@ -138,7 +134,6 @@ class ProductMixinView(mixins.RetrieveModelMixin,
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
     lookup_field='pk'
-    permission_classes=[permissions.IsAdminUser, IsStaffEditorPermission] #the order of the permissions is very imp here
     
     def put(): #we can also deal with put requests and delete requests in this View
         pass
