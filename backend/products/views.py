@@ -39,8 +39,8 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     """
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
-    authentication_classes=[authentication.TokenAuthentication #for token based Auth
-                            ,authentication.SessionAuthentication] #this is more useful within the django app (for a website using some kind of FrontEnd Framework)
+    # authentication_classes=[authentication.TokenAuthentication #for token based Auth
+    #                         ,authentication.SessionAuthentication] #this is more useful within the django app (for a website using some kind of FrontEnd Framework)
     # permission_classes=[permissions.IsAuthenticatedOrReadOnly] #can also Put DjangoModelPermissions
     permission_classes=[permissions.IsAdminUser, IsStaffEditorPermission] #the order of the permissions is very imp here
     
@@ -102,6 +102,7 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
     lookup_field='pk'
+    permission_classes=[permissions.IsAdminUser, IsStaffEditorPermission] #the order of the permissions is very imp here
     
     def perform_update(self,serializer):
         """
@@ -118,6 +119,7 @@ class ProductDeleteAPIView(generics.DestroyAPIView):
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
     lookup_field='pk'
+    permission_classes=[permissions.IsAdminUser, IsStaffEditorPermission] #the order of the permissions is very imp here
     
     def perform_destroy(self,instance):
         #do whatever you want with the instance before destroy
@@ -136,6 +138,7 @@ class ProductMixinView(mixins.RetrieveModelMixin,
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
     lookup_field='pk'
+    permission_classes=[permissions.IsAdminUser, IsStaffEditorPermission] #the order of the permissions is very imp here
     
     def put(): #we can also deal with put requests and delete requests in this View
         pass
