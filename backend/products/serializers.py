@@ -4,7 +4,10 @@ from rest_framework.reverse import reverse # this is different than the django r
 from .models import Products
 from .validators import validate_title
 
+from api.serializers import UserPublicSerializer
+
 class ProductSerializer(serializers.ModelSerializer): #very similar to how you make ModelForms
+    owner=UserPublicSerializer(source='user',read_only=True) #to show 
     title=serializers.CharField(validators=[validate_title,]) #giving a list of validators for checking this field
     my_discount=serializers.SerializerMethodField(read_only=True)
     edit_url=serializers.SerializerMethodField(read_only=True)
@@ -15,6 +18,7 @@ class ProductSerializer(serializers.ModelSerializer): #very similar to how you m
     class Meta:
         model=Products
         fields=[
+            'owner',
             'url',
             'edit_url',
             'title',

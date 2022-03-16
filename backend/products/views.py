@@ -1,10 +1,13 @@
+from urllib import request
 from rest_framework import generics, mixins, permissions
 # from api.permissions import IsStaffEditorPermission
-from api.mixins import StaffEditorPermissionMixin
+from api.mixins import StaffEditorPermissionMixin,UserQuerySetMixin
 from .models import Products
 from .serializers import ProductSerializer
 
-class ProductAPIView(StaffEditorPermissionMixin, generics.RetrieveAPIView):
+class ProductAPIView(UserQuerySetMixin,
+                     StaffEditorPermissionMixin,
+                     generics.RetrieveAPIView):
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
     lookup_field='pk'
@@ -27,18 +30,30 @@ class ProductCreateAPIView(StaffEditorPermissionMixin, generics.CreateAPIView):
         serializer.save(content=content)
         #send a django signal or assign a User FK to this model using request.user
 
-class ProductListCreateAPIView(StaffEditorPermissionMixin,generics.ListCreateAPIView):
+class ProductListCreateAPIView(UserQuerySetMixin,
+                               StaffEditorPermissionMixin,generics.ListCreateAPIView):
     """
     This is a mix of CreateAPIView and ListAPIView, depending on the method (GET or POST)
     this will either list all the Products or Create new ones
     """
+    
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
     # authentication_classes=[authentication.TokenAuthentication #for token based Auth
     #                         ,authentication.SessionAuthentication] #this is more useful within the django app (for a website using some kind of FrontEnd Framework)
     # permission_classes=[permissions.IsAuthenticatedOrReadOnly] #can also Put DjangoModelPermissions
     # permission_classes=[permissions.IsAdminUser, IsStaffEditorPermission] #the order of the permissions is very imp here
-    
+    # def get_queryset(self, *args, **kwargs):
+    #     """Will allow the user to see only the data that he has created"""
+    #     qs=super().get_queryset(*args, **kwargs)
+    #     request=self.request
+    #     user=request.user
+        
+    #     if not user.is_authenticated:
+    #         return Products.objects.none()
+        
+    #     return qs.filter(user=request.user)
+        
     def perform_create(self,serializer):
         """
         You can actually modify/assign/ do other stuff in this func to make changes/add more 
@@ -50,7 +65,7 @@ class ProductListCreateAPIView(StaffEditorPermissionMixin,generics.ListCreateAPI
         if content is None:
             content=title
         print(serializer)
-        serializer.save(content=content)
+        serializer.save(user=self.request.user,content=content)
         #send a django signal or assign a User FK to this model using request.user
     
 # class ProductListAPIView(generics.ListAPIView):
