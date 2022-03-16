@@ -19,6 +19,7 @@ class ProductSerializer(serializers.ModelSerializer): #very similar to how you m
         model=Products
         fields=[
             'owner',
+            'public',
             'url',
             'edit_url',
             'title',
