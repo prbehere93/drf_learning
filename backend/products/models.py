@@ -31,6 +31,10 @@ class Products(models.Model):
     
     objects=ProductManager()
     
+    #this method is for choosing which records to show (i.e. should be indexed) using the Algolia search thing
+    def is_public(self) -> bool: 
+        return self.public
+    
     @property
     def sale_price(self):
         return "%.2f"%(float(self.price)*0.8)

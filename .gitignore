@@ -1,3 +1,9 @@
+#virtual env
 .venv
+
+
 *.sqlite3
 *pycache*
+
+#environment file 
+*.env
