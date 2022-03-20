@@ -8,13 +8,13 @@ class ProductIndex(AlgoliaIndex):
     # should_index='is_public' #refers to a method that returns a bool specifying if a record should be indexed or not
     fields=[
         'title',
-        'content',
+        'body',
         'price',
         'user',
         'public'
     ]
     
     settings={
-        'searchableAttributes':['title','content'],
+        'searchableAttributes':['title','body'],
         'attributesForFaceting':['user','public'],
     }

@@ -31,6 +31,10 @@ class Products(models.Model):
     
     objects=ProductManager()
     
+    @property
+    def body(self): #lets just say that we want to show body instead of content in the api view, we can do it this way
+        return self.content
+    
     #this method is for choosing which records to show (i.e. should be indexed) using the Algolia search thing
     def is_public(self) -> bool: 
         return self.public

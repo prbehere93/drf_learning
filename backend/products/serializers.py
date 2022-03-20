@@ -13,7 +13,7 @@ class ProductSerializer(serializers.ModelSerializer): #very similar to how you m
     edit_url=serializers.SerializerMethodField(read_only=True)
     url=serializers.HyperlinkedIdentityField(view_name='product-detail', #takes the url name and the lookup field as args
                                              lookup_field='pk')
-    
+    body=serializers.CharField(source='content') #basically representing the 'content' field as body
     email=serializers.EmailField(write_only=True) #can only 'write' to this field (POST req)
     class Meta:
         model=Products
@@ -24,7 +24,7 @@ class ProductSerializer(serializers.ModelSerializer): #very similar to how you m
             'edit_url',
             'title',
             'email',
-            'content',
+            'body',
             'price',
             'sale_price',
             'my_discount'
