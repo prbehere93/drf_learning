@@ -190,7 +190,7 @@ if __name__ == "__main__":
 
     # simple instance method to perform an HTTP
     # request to our /api/products/ endpoint
-    lookup_1_data = client.list(limit=5)
+    lookup_1_data = client.list(limit=5)    
     # We used pagination at our endpoint so we have:
     results = lookup_1_data.get('results')
     next_url = lookup_1_data.get('next')
