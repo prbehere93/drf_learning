@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import environ
 import os
 from pathlib import Path
+import datetime
 
 
 env=environ.Env(
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     #third party packages
     'rest_framework',
     'rest_framework.authtoken', #for user token auth
+    'rest_framework_simplejwt',
     
     'api',
     'products',
@@ -140,8 +142,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #so you don't need to define auth classes for each view
 REST_FRAMEWORK={
     "DEFAULT_AUTHENTICATION_CLASSES":[
+        'rest_framework_simplejwt.authentication.JWTAuthentication', #jwt authentication
         "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication"
+        "rest_framework.authentication.TokenAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES":[
         "rest_framework.permissions.IsAuthenticatedOrReadOnly"
@@ -154,4 +157,10 @@ ALGOLIA={
     'APPLICATION_ID': env('APPLICATION_ID'),
     'API_KEY':env('API_KEY'),
     'INDEX_PREFIX':'prb',
+}
+
+SIMPLE_JWT={
+    "AUTH_HEADER_TYPES":['Bearer',],
+    "ACCESS_TOKEN_LIFETIME":datetime.timedelta(seconds=20),
+    "REFRESH_TOKEN_LIFETIME":datetime.timedelta(minutes=1),       
 }
