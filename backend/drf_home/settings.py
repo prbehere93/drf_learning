@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken', #for user token auth
     'rest_framework_simplejwt',
+    'corsheaders',
     
     'api',
     'products',
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -65,6 +67,13 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'drf_home.urls'
+CORS_URL_REGEX=r"^/api/.*"
+CORS_ALLOWED_ORIGINS=[]
+
+if DEBUG:
+    CORS_ALLOWED_ORIGINS+=[
+        "http://localhost:8100",
+    ]
 
 TEMPLATES = [
     {
