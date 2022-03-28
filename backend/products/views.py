@@ -7,7 +7,7 @@ from .serializers import ProductSerializer
 
 class ProductAPIView(UserQuerySetMixin,
                      StaffEditorPermissionMixin,
-                     generics.RetrieveAPIView):
+                     generics.RetrieveAPIView,generics.UpdateAPIView):
     queryset=Products.objects.all()
     serializer_class=ProductSerializer
     lookup_field='pk'
